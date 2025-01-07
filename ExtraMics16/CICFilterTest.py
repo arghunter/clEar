@@ -2,8 +2,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.io.wavfile import write,read
 import soundfile as sf
-filename="C:\\Users\\arg\\Documents\\MATLAB\\pdm_sine_wave_2.txt"
-
+filename="./pdm_sinewave.txt"
+import matplotlib
+matplotlib.use("Qt5Agg")
 def binary_to_decimal(binary_str):
     """
     Convert a two's complement binary string to a decimal integer.
@@ -34,7 +35,7 @@ def twos_complement_addition(bin1, bin2, bits=19):
     dec1 = binary_to_decimal(bin1)
     dec2 = binary_to_decimal(bin2)
     result_decimal = dec1 + dec2
-    
+
     # Wrap around if necessary
     max_value = 1 << (bits - 1)
     min_value = -1 * max_value
@@ -67,7 +68,7 @@ def twos_complement_subtraction(bin1, bin2, bits=19):
 # print(f"Result of adding {bin1} and {bin2} in 32-bit two's complement: {result_add}")
 # print(f"Result of subtracting {bin2} from {bin1} in 32-bit two's complement: {result_sub}")
 
-    
+
 
 int1="0"
 int2="0"
@@ -78,21 +79,22 @@ dif3="0"
 out="0"
 counter=1
 out_array=[]
+in_array=[]
 count2=0
 with open(filename, 'r') as file:
     line=file.readline()
-    
+
     while(line!=""):
         count2+=1
         int1=twos_complement_addition(int1,decimal_to_binary(int(line.strip())))
-        
+        in_array.append(decimal_to_binary(int(line.strip())))
         int2=twos_complement_addition(int1,int2)
         int3=twos_complement_addition(int2,int3)
         if counter>=64:
-            
+
             out=twos_complement_subtraction(twos_complement_subtraction(twos_complement_subtraction(int3,dif1),dif2),dif3)
             dif3=twos_complement_subtraction(twos_complement_subtraction(int3,dif1),dif2)
-            
+
             dif2=twos_complement_subtraction(int3,dif1)
             dif1=int3
             counter=0
@@ -104,22 +106,26 @@ nparr=np.array(out_array, dtype=float)
 print(max(nparr))
 nparr/=max(nparr)
 print(len(nparr))
-# write("ExtraMics16/AudioTests/cictest.wav", 48000,np.array(out_array))
-plt.plot(nparr)
+write("cictest.wav", 48000,np.array(out_array))
+plt.plot(nparr[0:2000])
+plt.show()
+nparr=np.array(in_array, dtype=float)
+print(max(nparr))
+nparr/=max(nparr)
+plt.plot(nparr[0:2000])
+plt.show()
 import scipy
 # Add labels and title for better understanding
-N =int(4096)
-# sample spacing
-T = 1.0 / 48000.0
-x = np.linspace(0.0, N*T, N)
-y = nparr
-yf = scipy.fftpack.fft(y)
-xf = np.linspace(0.0, 1.0/(2.0*T), N//2)
+# N =int(4096)
+# # sample spacing
+# T = 1.0 / 48000.0
+# x = np.linspace(0.0, N*T, N)
+# y = nparr
+# yf = scipy.fftpack.fft(y)
+# xf = np.linspace(0.0, 1.0/(2.0*T), N//2)
 
-fig, ax = plt.subplots()
-ax.plot(xf[0:300], (2.0/N * np.abs(yf[:N//2]))[0:300])
-plt.show()
-# Display the plot
-plt.show()
-
-        
+# fig, ax = plt.subplots()
+# ax.plot(xf[0:300], (2.0/N * np.abs(yf[:N//2]))[0:300])
+# plt.show()
+# # Display the plot
+# plt.show()
