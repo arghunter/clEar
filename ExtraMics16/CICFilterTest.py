@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.io.wavfile import write,read
 import soundfile as sf
-filename="./pdm_sinewave.txt"
+filename="./ExtraMics16/pdm_sinewave.txt"
 import matplotlib
 matplotlib.use("Qt5Agg")
 def binary_to_decimal(binary_str):
@@ -81,6 +81,7 @@ counter=1
 out_array=[]
 in_array=[]
 count2=0
+
 with open(filename, 'r') as file:
     line=file.readline()
 
@@ -115,6 +116,11 @@ nparr/=max(nparr)
 plt.plot(nparr[0:2000])
 plt.show()
 import scipy
+print(np.sum(np.square(nparr)))#
+write("ExtraMics16/AudioTests/cictest.wav", 48000,nparr)
+print("hereq1")
+# plt.plot(nparr)
+
 # Add labels and title for better understanding
 # N =int(4096)
 # # sample spacing

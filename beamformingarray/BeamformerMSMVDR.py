@@ -6,8 +6,6 @@ from IOStream import IOStream
 from AudioWriter import AudioWriter
 from VAD import VAD
 from MUSIC import MUSIC
-import threading
-import pickle
 from DelayApproximation import DelayAproximator
 from SignalGen import SignalGen
 C=343.3
@@ -34,13 +32,11 @@ class Beamformer():
         self.speech=False
         self.MUSIC=MUSIC(spacing=spacing,num_channels=num_channels,srctrk=srctrck)
         self.c=6
-        
         self.music_freq=10
         self.fail_count=0
         self.delay_approx=DelayAproximator(self.spacing)
         self.doalock=False
         self.signalGen=SignalGen(n_channels=2,spacing=np.array([[-0.08,0],[0.08,0]]))
-        # self.
         
     def beamform(self,frame):
         if(len(frame)!=self.frame_len):
@@ -160,13 +156,13 @@ spacing=np.array([[-0.08,0.042],[-0.08,0.014],[-0.08,-0.028],[-0.08,-0.042],[0.0
 num_microphones=len(spacing)
 target_samplerate=48000
 sig_gen=SignalGen(num_microphones,spacing,target_samplerate)
-speech,samplerate=sf.read(("C:/Users/arg/Documents/Datasets/dev-clean.tar/dev-clean/LibriSpeech/dev-clean/2035/147961/2035-147961-0018.flac"))
+speech,samplerate=sf.read(("C:\\Users\\arg\\Documents\\GitHub\\EyeHear\\beamformingarray\\AudioTests\\2035F.flac"))
 interpolator=Preprocessor(mirrored=False,interpolate=int(np.ceil(target_samplerate/16000)))
-speech=np.reshape(speech,(-1,1))
+speech=0.8*np.reshape(speech,(-1,1))
 speech=interpolator.process(speech)
 sig_gen.update_delays(90)
 angled_speech=sig_gen.delay_and_gain(speech)
-speech1,samplerate=sf.read(("C:/Users/arg/Documents/Datasets/dev-clean.tar/dev-clean/LibriSpeech/dev-clean/652/130737/652-130737-0005.flac"))
+speech1,samplerate=sf.read(("C:/Users/arg/Documents/Datasets/dev-clean.tar/dev-clean/LibriSpeech/dev-clean/2035/147961/2035-147961-0018.flac"))
 interpolator=Preprocessor(mirrored=False,interpolate=int(np.ceil(target_samplerate/16000)))
 speech1=np.reshape(speech1,(-1,1))
 speech1=interpolator.process(speech1)
@@ -178,10 +174,10 @@ speech2=np.reshape(speech2,(-1,1))
 speech2=interpolator.process(speech2)
 sig_gen.update_delays(240)
 angled_speech=angled_speech[0:min(len(speech),min(len(speech1),len(speech2)))]+sig_gen.delay_and_gain(speech2)[0:min(len(speech),min(len(speech1),len(speech2)))]
-angled_speech+=0.05*np.random.randn(*angled_speech.shape)
+angled_speech+=0.01*np.random.randn(*angled_speech.shape)
 aw1=AudioWriter()
 aw1.add_sample(angled_speech,0)
-# aw1.write("./beamformingarray/AudioTests/Demos/2noise.wav",48000)
+aw1.write("./beamformingarray/AudioTests/Demos/6noise.wav",48000)
 beam=Beamformer(spacing=spacing)
 
 io.arrToStream(angled_speech,48000)
@@ -189,4 +185,4 @@ while(not io.complete()):
     sample=io.getNextSample()
     # print(sample)
     aw.add_sample(beam.beamform(sample),480)
-aw.write("./beamformingarray/AudioTests/Demos/2cleanaux.wav",48000)
+aw.write("./beamformingarray/AudioTests/Demos/6clean.wav",48000)

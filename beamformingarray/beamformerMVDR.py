@@ -44,32 +44,27 @@ class Beamformer():
     def beamform(self,frame):
         if(len(frame)!=self.frame_len):
             return np.zeros((self.frame_len,1))
-        # print(pcm[j : j + frame_len,:].shape)
         win_data = np.asmatrix(frame*self.win_multi)
         
         
         spectrum=np.asmatrix(np.fft.rfft(win_data,self.stft_len,axis=0))
-        # print(spectrum.shape)
+
         if self.frame_count < self.exp_avg:
             self.mu=(self.frame_count-1)/self.frame_count
         for k in range(0,self.N_f):
             cov_mat=np.dot(spectrum[k,:].T, np.conj(spectrum[k,:]))
             corr_mat=cov_mat/np.trace(cov_mat); 
-            # print(corr_mat.dtype)
-            # print(cov_mat.shape)
-            
+
             self.global_covar[:, :, k] = self.mu * self.global_covar[:, :, k] + (1 - self.mu) * corr_mat
     
         
         self.speech=self.vad.is_speech(win_data)
-        # print(speech)
-        # self.speech=True
+
         
         if self.speech and self.doalock==False:
             if self.c>self.music_freq:
                 covar=self.global_covar.copy()
-                # t=threading.Thread(target=self.MUSIC.doa, args=(covar,))
-                # t.start()
+
                 self.MUSIC.doa(covar)
                 self.c=0
             self.c+=1
@@ -115,9 +110,9 @@ class Beamformer():
         for k in range (0,self.N_f-1):
             f=k*self.sample_rate/self.stft_len;
             alpha=np.exp(-1j*2*np.pi*f*time).T
-            r_inv=np.linalg.pinv(self.global_covar[:,:,k]+(1e-8)*np.eye(self.num_channels)) # this is bad
+            r_inv=np.linalg.pinv(self.global_covar[:,:,k]+(1e-8)*np.eye(self.num_channels)) 
             w[:,k]=r_inv@alpha/(np.conj(alpha.T)@r_inv@alpha)
-        rec_signal=np.multiply(w.H,spectrum[0:self.N_f,:])# Works till here the next block may be an issue
+        rec_signal=np.multiply(w.H,spectrum[0:self.N_f,:])
 
         submatrix = rec_signal[1:-1, :]
 
