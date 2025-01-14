@@ -80,7 +80,7 @@ class Beamformer:
 
     def update_delays(self,azimuth,elevation): #doa in degrees, assuming plane wave as it is a far-field source
         # self.doa=doa
-        self.delays=np.array(self.delay_approx.get_delays(DelayAproximator.get_pos(azimuth,elevation,1)))*10**6
+        self.delays=np.array(self.delay_approx.get_flat_delays(azimuth,elevation))*10**6
         print(self.delays)
         shift=min(self.delays)
         self.delays+=-shift
@@ -96,15 +96,16 @@ import soundfile as sf
 # spacing=np.array([[-0.1,-0.1,0],[-0.1,0.0,0],[-0.1,0.1,0],[0,-0.1,0],[0,0,0],[0,0.1,0],[0.1,-0.1,0],[0.1,0,0],[0.1,0.1,0]])
 # spacing=np.array([[-0.2,-0.2,0],[-0.2,-0.1,0],[-0.2,0.1,0],[-0.2,0.2,0],[-0.1,-0.2,0],[-0.1,-0.1,0],[-0.1,0.1,0],[-0.1,0.2,0],[0.1,-0.2,0],[0.1,-0.1,0],[0.1,0.1,0],[0.1,0.2,0],[0.2,-0.2,0],[0.2,-0.1,0],[0.2,0.1,0],[0.2,0.2,0]])
 # spacing=np.array([[-0.18,0.12,0],[-0.06,0.12,0],[0.06,0.12,0],[0.18,0.12,0],[-0.18,0,0],[-0.06,0,0],[0.06,0,0],[0.18,0,0],[-0.18,-0.12,0],[-0.06,-0.12,0],[0.06,-0.12,0],[0.18,-0.12,0]])
-spacing=np.array([[-0.06,-0.12,0],[-0.18,-0.12,0],[-0.06,0,0],[-0.18,0,0],[-0.06,0.12,0],[-0.18,0.12,0],[0.18,-0.12,0],[0.06,-0.12,0],[0.18,0,0],[0.06,0,0],[0.18,0.12,0],[0.06,0.12,0]])
+# spacing=np.array([[-0.06,-0.12,0],[-0.18,-0.12,0],[-0.06,0,0],[-0.18,0,0],[-0.06,0.12,0],[-0.18,0.12,0],[0.18,-0.12,0],[0.06,-0.12,0],[0.18,0,0],[0.06,0,0],[0.18,0.12,0],[0.06,0.12,0]])
+spacing=np.array([[-0.06,-0.24,0],[-0.18,-0.24,0],[-0.06,-0.12,0],[-0.18,-0.12,0],[-0.06,0,0],[-0.18,0,0],[-0.06,0.12,0],[-0.18,0.12,0],[0.18,-0.24,0],[0.06,-0.24,0],[0.18,-0.12,0],[0.06,-0.12,0],[0.18,0,0],[0.06,0,0],[0.18,0.12,0],[0.06,0.12,0]])
 
 # sig=Sine(1500,0.5,48000)
 azimuth=60
 elevation=60
 pe=Preprocessor(interpolate=3)
 target_samplerate=48000
-sig_gen=SignalGen(12,spacing)
-speech,samplerate=sf.read(("C:/Users/arg/Documents/GitHub/EyeHear/Acoustics/AudioTests/test6speech.wav"))
+sig_gen=SignalGen(16,spacing)
+speech,samplerate=sf.read(("C:/Users/arg/Documents/GitHub/EyeHear/Acoustics/AudioTests/test8.wav"))
 # interpolator=Preprocessor(mirrored=False,interpolate=int(np.ceil(target_samplerate/16000)))
 # print(speech.shape)
 # speech=np.reshape(speech,(-1,1))
@@ -125,8 +126,8 @@ speech,samplerate=sf.read(("C:/Users/arg/Documents/GitHub/EyeHear/Acoustics/Audi
 
 
 # spacing=np.array([[-0.1,-0.1,0],[-0.1,0.0,0],[-0.1,0.1,0],[0,-0.1,0],[0,0,0],[0,0.1,0],[0.1,-0.1,0],[0.1,0,0],[0.1,0.1,0]])
-beam=Beamformer(n_channels=12,coord=spacing)
-segments=7
+beam=Beamformer(n_channels=16,coord=spacing)
+segments=21
 rms_data=np.zeros((segments,segments))
 azi=-90
 ele=-90

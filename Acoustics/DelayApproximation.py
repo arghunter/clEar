@@ -31,7 +31,22 @@ class DelayAproximator:
         # pos=[dist*np.cos(azimuth)*np.cos(elevation),dist*np.cos(azimuth)*np.sin(elevation),dist*np.sin(azimuth)]
         # print(pos)
         # return pos
-
+    def get_flat_delays(self,azimuth,elevation):
+        delays=np.zeros((len(self.coords)))
+        delayx=np.zeros((len(self.coords)))
+        delayy=np.zeros((len(self.coords)))
+        iter=0
+        for mic_pos in self.coords:
+            delayx[iter]=(((np.cos(np.radians(azimuth)+np.pi/2)*mic_pos[0])/v))
+            delayy[iter]=(((np.cos(np.radians(elevation)+np.pi/2)*mic_pos[1])/v))
+            iter+=1
+        delayx+=min(delayx)
+        delayy+=min(delayy)
+        iter=0
+        delays=np.sqrt(delayx**2+delayy**2)
+        
+            
+        return delays
     
 
 
